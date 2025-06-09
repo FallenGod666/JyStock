@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block title %}Gestão de Mercadorias{% endblock %}
+
+{% block page_title %}
+    Gestão de Mercadorias
+{% endblock %}
+
+{% block content %}
+
+    {# Bloco para exibir mensagens de sucesso ou erro com o novo visual #}
+    {% if messages %}
+    <div class="mb-6">
+        {% for message in messages %}
+        <div class="p-4 text-sm rounded-lg {% if message.tags == 'success' %}bg-green-800 text-green-100{% else %}bg-red-800 text-red-100{% endif %}" role="alert">
+            <span class="font-bold">{% if message.tags == 'success' %}Sucesso!{% else %}Erro!{% endif %}</span> {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Card 1: Formulário de Cadastro de Nova Mercadoria #}
+    <div class="content-section p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Cadastrar Nova Mercadoria</h2>
+        
+        <form action="{% url 'add_produto' %}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Nome da Mercadoria</label>
+                <input type="text" name="nome" class="input-field" required>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Categoria</label>
+                    <select name="categoria" class="select-field" required>
+                        <option value="">Selecione uma categoria</option>
+                        {% for categoria in categorias %}
+                            <option value="{{categoria.id}}">{{categoria.titulo}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Estoque Inicial</label>
+                    <input type="number" name="quantidade" class="input-field" value="0" min="0" required>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Preço de Compra</label>
+                    <input type="number" step="0.01" name="preco_compra" class="input-field" placeholder="R$ 0,00">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Preço de Venda</label>
+                    <input type="number" step="0.01" name="preco_venda" class="input-field" placeholder="R$ 0,00" required>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Imagens (pode selecionar várias)</label>
+                <input type="file" name="imagens" multiple class="input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--accent-green-secondary)] file:text-[var(--text-green-light)] hover:file:bg-[var(--accent-green-primary)] cursor-pointer">
+            </div>
+
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle mr-2"></i> Registrar Mercadoria
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {# Card 2: Filtro e Listagem de Mercadorias #}
+    <div class="content-section mt-8 p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Mercadorias Cadastradas</h2>
+        
+        <form action="{% url 'add_produto' %}" method="GET" class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Buscar por nome</label>
+                    <input class="input-field" type="text" name="nome" placeholder="Nome da mercadoria...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Categoria</label>
+                    <select class="select-field" name="categoria">
+                        <option value="">Todas</option>
+                        {% for categoria in categorias %}
+                            <option value="{{categoria.id}}">{{categoria.titulo}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Preço Mín.</label>
+                        <input class="input-field" type="number" name="preco_min" placeholder="R$ Mín">
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Preço Máx.</label>
+                        <input class="input-field" type="number" name="preco_max" placeholder="R$ Máx">
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-filter mr-2"></i>Filtrar
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+                <thead class="table-header">
+                    <tr>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3"></th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Nome</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Categoria</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Estoque</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Preço Venda</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-color)]">
+                    {% for produto in produtos %}
+                    <tr class="table-row-hover">
+                        <td class="table-cell">
+                            {% if produto|get_first_image %}
+                                <img src="{{ produto|get_first_image }}" alt="{{ produto.nome }}" class="h-10 w-10 object-cover rounded-md bg-[var(--bg-lighter)]">
+                            {% else %}
+                                <div class="h-10 w-10 rounded-md bg-[var(--bg-lighter)] flex items-center justify-center">
+                                    <i class="fas fa-box text-xl text-[var(--text-green-dark)]"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td class="table-cell font-semibold">{{ produto.nome }}</td>
+                        <td class="table-cell">{{ produto.categoria.titulo }}</td>
+                        <td class="table-cell">{{ produto.quantidade }}</td>
+                        <td class="table-cell">R$ {{ produto.preco_venda|floatformat:2 }}</td>
+                        <td class="table-cell">
+                            <a href="{% url 'produto' produto.slug %}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="table-cell text-center py-8 text-[var(--text-color-muted)]">Nenhuma mercadoria encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

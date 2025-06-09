@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Vendedores{% endblock %}
+
+{% block page_title %}
+    Gestão de Vendedores
+{% endblock %}
+
+{% block content %}
+
+    {# Bloco para exibir mensagens de sucesso ou erro com o novo visual #}
+    {% if messages %}
+    <div class="mb-6 space-y-3">
+        {% for message in messages %}            
+            <div class="p-4 text-sm rounded-lg flex items-center {% if 'success' in message.tags %}bg-green-200 text-green-800 border border-green-400{% else %}bg-red-200 text-red-800 border border-red-400{% endif %}" role="alert">
+                
+                {% if 'success' in message.tags %}
+                    <i class="fas fa-check-circle mr-3"></i>
+                    {# <span class="font-bold">Sucesso!</span> #}
+                {% else %}
+                    <i class="fas fa-exclamation-triangle mr-3"></i>
+                    {# <span class="font-bold">Aviso!</span> #}
+                {% endif %}
+
+                <span class="ml-2">{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# 1. O formulário agora fica dentro de um "card" bonito #}
+    <div class="content-section active p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Cadastrar Novo Vendedor</h2>
+        
+        <form action="{% url 'cadastrar_vendedor' %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            {# Agrupamos os campos de nome e sobrenome lado a lado #}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Nome</label>
+                    <input type="text" name="nome" class="input-field" required placeholder="Primeiro nome do vendedor">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Sobrenome</label>
+                    <input type="text" name="sobrenome" class="input-field" required placeholder="Sobrenome do vendedor">
+                </div>
+            </div>
+            
+            {# Campo de E-mail #}
+            <div>
+                <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">E-mail</label>
+                <input type="email" name="email" class="input-field" required placeholder="email@exemplo.com">
+            </div>
+
+            {# Campo de Senha #}
+            <div>
+                <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Senha</label>
+                <input type="password" name="senha" class="input-field" required placeholder="Crie uma senha forte">
+            </div>
+
+            {# Botão de Envio com o novo estilo #}
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus-circle mr-2"></i> Cadastrar Vendedor
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {# 2. A tabela de vendedores também fica dentro de um "card" #}
+    <div class="content-section active mt-8 p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Vendedores Cadastrados</h2>
+        <div class="overflow-x-auto">
+            {# A tabela agora usa as classes do novo CSS #}
+            <table class="min-w-full table-auto">
+                <thead class="table-header">
+                    <tr>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Nome</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Sobrenome</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">E-mail</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Último Login</th>
+                        <th class="text-left text-xs uppercase tracking-wider px-4 py-3">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--border-color)]">
+                    {% for vendedor in vendedores %}
+                    <tr class="table-row-hover">
+                        <td class="table-cell font-semibold">{{ vendedor.first_name }}</td>
+                        <td class="table-cell">{{ vendedor.last_name }}</td>
+                        <td class="table-cell">{{ vendedor.email }}</td>
+                        <td class="table-cell">
+                            {% if not vendedor.last_login %}
+                                <span class="text-gray-400">Nunca acessou</span>
+                            {% else %}
+                                {# Usamos um filtro do Django para formatar a data de forma mais amigável #}
+                                {{ vendedor.last_login|date:"d/m/Y H:i" }}
+                            {% endif %}
+                        </td>
+                        <td class="table-cell">
+                            {# Botão de Excluir com o novo estilo e ícone #}
+                            <a href="{% url 'excluir_usuario' vendedor.id %}" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt mr-1"></i> Excluir
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="table-cell text-center py-8 text-[var(--text-color-muted)]">Nenhum vendedor cadastrado.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

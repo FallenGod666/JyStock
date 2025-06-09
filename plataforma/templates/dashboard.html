@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Produtos Únicos</h3>
+            <p class="text-4xl font-bold text-[var(--accent-green-primary)] mt-2">
+                {{ total_produtos|default:"0" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Itens em Estoque</h3>
+            <p class="text-4xl font-bold text-[var(--accent-green-primary)] mt-2">
+                {{ total_itens_estoque|default:"0" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Valor em Estoque</h3>
+            <p class="text-3xl font-bold text-[var(--accent-green-primary)] mt-2">                
+                R$ {{ valor_total_estoque|floatformat:2 }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Baixo Estoque</h3>            
+            <p class="text-4xl font-bold text-[var(--warning-color)] mt-2">
+                {{ produtos_baixo_estoque|default:"0" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Esgotados</h3>            
+            <p class="text-4xl font-bold text-[var(--danger-color)] mt-2">
+                {{ produtos_esgotados|default:"0" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Cupons Ativos</h3>
+            <p class="text-4xl font-bold text-[var(--accent-green-primary)] mt-2">
+                {{ cupons_ativos|default:"0" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Faturamento (Hoje)</h3>
+            <p class="text-3xl font-bold text-[var(--accent-green-primary)] mt-2">
+                R$ {{ faturamento_hoje|floatformat:2|default:"0,00" }}
+            </p>
+        </div>
+
+        <div class="content-section p-6">
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Faturamento (Mês)</h3>
+            <p class="text-3xl font-bold text-[var(--accent-green-primary)] mt-2">
+                R$ {{ faturamento_mes|floatformat:2|default:"0,00" }}
+            </p>
+        </div>      
+
+    </div>
+
+    <div class="content-section mt-8 p-6">
+        <h2 class="text-xl font-bold mb-4 text-[var(--accent-green-primary)]">Gráfico de Vendas Mensais</h2>
+        <div class="h-64 bg-[var(--bg-medium)] flex items-center justify-center rounded-lg">
+            <p class="text-[var(--text-color-muted)]">-- Gráfico em breve --</p>
+        </div>
+    </div>
+
+{% endblock %}

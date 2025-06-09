@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login Jython</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+  <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap");
+      :root {
+          --bg-dark: #081409;
+        --bg-medium: #0d1b0e; 
+        --bg-light: #1a2e1b; 
+        --bg-lighter: #243e25; 
+        --text-green-light: #d1f7d6; 
+        --text-green-medium: #b7f5bb; 
+        --text-green-dark: #7fcf85; 
+        --accent-green-primary: #63d471; 
+        --accent-green-secondary: #233329; 
+        --border-color: #3a5c3b; 
+        --shadow-color: rgba(0, 0, 0, 0.5); 
+        --danger-color: #dc3545;
+      }
+      body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-green-light); 
+    }
+
+    .login-container {
+      background-color: var(--bg-light);
+      border-radius: 0.75rem; 
+      box-shadow: 0 10px 25px var(--shadow-color); 
+      overflow: hidden;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column; 
+    }
+
+    @media (min-width: 768px) {
+      .login-container {
+        flex-direction: row;
+      }
+    }
+
+    .form-side {
+      padding: 2.5rem; 
+      position: relative;
+    }
+
+    .form-label {
+      color: var(--text-green-dark); 
+      font-weight: 700; 
+      font-size: 0.75rem; 
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .input-field {
+      background-color: var(--bg-lighter); 
+      border: 1px solid var(--border-color); 
+      color: var(--text-green-light);
+      border-radius: 9999px; 
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      transition: all 0.2s ease-in-out;
+      vertical-align: middle;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--accent-green-primary);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-green-primary) 30%, transparent);
+    }
+
+    .eye-icon {
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--text-green-medium);
+        transition: color 0.2s ease-in-out;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    .eye-icon:hover {
+      color: var(--accent-green-primary);
+    }
+
+    .btn-login {
+      background: linear-gradient(to right, var(--accent-green-primary), color-mix(in srgb, var(--accent-green-primary) 80%, var(--accent-green-secondary)));
+      color: var(--bg-dark);
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 0.75rem 1.5rem;
+      transition: all 0.25s ease-out;
+      box-shadow: 0 4px 10px color-mix(in srgb, var(--accent-green-primary) 30%, transparent);
+    }
+
+    .btn-login:hover {
+      opacity: 0.95;
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 6px 15px color-mix(in srgb, var(--accent-green-primary) 50%, transparent);
+    }
+
+    .remember-me-label {
+      color: var(--accent-green-primary);
+      font-weight: 600;
+    }
+
+    .remember-me-checkbox {
+      width: 1.15rem; 
+      height: 1.15rem; 
+      border-radius: 0.2rem;
+      border: 2px solid var(--accent-green-primary);
+      background-color: transparent; 
+      accent-color: var(--accent-green-primary); 
+      transition: all 0.2s ease-in-out;
+    }
+
+    .remember-me-checkbox:checked {
+        background-color: var(--accent-green-primary);
+        border-color: var(--accent-green-primary);
+    }
+
+    .forgot-password-link {
+      color: var(--text-green-dark); 
+      font-weight: 400;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .forgot-password-link:hover {
+      color: var(--accent-green-primary);
+      text-decoration: underline;
+    }
+
+    .right-panel {
+      background: linear-gradient(135deg, var(--accent-green-secondary) 0%, var(--bg-medium) 100%);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .right-panel img {
+      width: 100px;
+      margin-bottom: 1rem;
+    }
+
+    .right-panel h3 {
+      color: var(--text-green-medium);
+      font-weight: 800;
+      font-size: 1.5rem;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+  {% if messages %}
+    <div class="absolute top-5 right-5 z-50">
+      {% for message in messages %}
+        <div class="p-4 mb-4 text-sm text-red-100 bg-red-800 rounded-lg shadow-lg" role="alert">
+          <span class="font-medium">Erro!</span> {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="max-w-4xl w-full flex login-container">
+    <div class="flex-1 form-side">
+      <h2 class="text-xl font-normal text-[var(--text-green-light)] mb-6">Entrar no Sistema</h2>
+
+      <form class="space-y-6" action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+        <div>
+          <label for="username" class="form-label mb-1">Usuário (E-mail)</label>
+          <input id="username" type="email" name="email" placeholder="Digite seu e-mail"
+                 class="w-full input-field" required/>
+        </div>
+        <div class="relative">
+          <label for="password" class="form-label mb-1">Senha</label>
+          <input id="password" type="password" name="senha" placeholder="Digite sua senha"
+                 class="w-full input-field pr-10" required/>
+          <i class="fas fa-eye eye-icon" id="togglePassword" onclick="toggleSenha()"></i>
+        </div>
+        <button type="submit" class="w-full btn-login">
+          Entrar
+        </button>
+        <div class="flex items-center justify-between text-sm mt-1">
+          <label class="flex items-center space-x-2 remember-me-label cursor-pointer select-none">
+            <input type="checkbox" checked class="remember-me-checkbox" />
+            <span>Lembrar-me</span>
+          </label>
+          <a href="#" class="forgot-password-link hover:underline">Esqueceu a senha?</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="flex-1 right-panel">
+      <img src="{% static 'Jython.png' %}" alt="Logo Jython" class="w-24 mb-4" />
+      <h3 class="text-2xl font-extrabold text-[var(--text-green-medium)] mb-3">Bem-vindo(a) ao Controle de Estoque JyStock!</h3>
+      <p class="text-[var(--text-green-light)] text-sm opacity-90">Sua solução inteligente para gerenciamento de inventário. Acesse para começar.</p>
+    </div>
+  </div>
+
+  <script>
+    // A função de ver/ocultar senha continua igual
+    function toggleSenha() {
+      const senha = document.getElementById("password");
+      const icone = document.getElementById("togglePassword");
+      if (senha.type === "password") {
+        senha.type = "text";
+        icone.classList.remove("fa-eye");
+        icone.classList.add("fa-eye-slash");
+      } else {
+        senha.type = "password";
+        icone.classList.remove("fa-eye-slash");
+        icone.classList.add("fa-eye");
+      }
+    }
+  </script>
+</body>
+</html>

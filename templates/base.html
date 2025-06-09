@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="jython">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Jython Estoque{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>      
+      :root {
+          --bg-dark: #081409; --bg-medium: #0d1b0e; --bg-light: #1a2e1b; --bg-lighter: #243e25;
+          --text-green-light: #d1f7d6; --text-green-medium: #b7f5bb; --text-green-dark: #7fcf85;
+          --accent-green-primary: #63d471; --accent-green-secondary: #233329; --border-color: #3a5c3b;
+          --shadow-color: rgba(0, 0, 0, 0.5); --text-color-default: var(--text-green-light);
+          --text-color-muted: var(--text-green-dark); --sidebar-icon-color: var(--text-green-medium);
+          --danger-color: #dc3545; --warning-color: #ffc107;
+      }
+      body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); color: var(--text-color-default); }
+      .sidebar { width: 260px; transition: width 0.3s ease-in-out; background-color: var(--bg-medium); border-right: 1px solid var(--border-color); position: fixed; height: 100vh; z-index: 50; display: flex; flex-direction: column; }
+      .sidebar.collapsed { width: 78px; }
+      .main-content { margin-left: 260px; transition: margin-left 0.3s ease-in-out; padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; width: calc(100% - 260px); }
+      .main-content.sidebar-collapsed { margin-left: 78px; }
+      .header-main { background-color: var(--bg-light); border-radius: 0.75rem; padding: 1rem; }
+      .content-section { background-color: var(--bg-light); border-radius: 0.75rem; box-shadow: 0 6px 20px var(--shadow-color); padding: 2rem; width: 100%; }
+      .input-field, .select-field, .textarea-field { background-color: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-color-default); border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; }
+      .input-field:focus, .select-field:focus, .textarea-field:focus { outline: none; border-color: var(--accent-green-primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-green-primary) 30%, transparent); }
+      .table-header th { background-color: var(--bg-lighter); color: var(--text-color-muted); font-weight: 600; padding: 1rem 1.5rem; border-bottom: 2px solid var(--border-color); }
+      .table-row-hover:hover { background-color: var(--bg-lighter); }
+      .table-cell { color: var(--text-color-default); padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+      .btn { font-weight: 600; border-radius: 0.5rem; padding: 0.75rem 1.5rem; transition: all 0.25s ease-out; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; }
+      .btn-primary { background: linear-gradient(to right, var(--accent-green-primary), #4db359); color: var(--bg-dark) !important; }
+      .btn-danger { background-color: var(--danger-color); color: white !important; }
+      .btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+      .logo-container { border-bottom: 1px solid var(--border-color); min-height: 65px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; flex-shrink: 0; }
+      .logo-link { display: flex; align-items: center; text-decoration: none; }
+      .logo-text-span { color: var(--text-color-default); font-size: 1.25rem; font-weight: 600; }
+      #toggleSidebar { color: var(--text-color-default); background: none; border: none; cursor: pointer; }
+      .menu-item { cursor: pointer; } .menu-item a { color: var(--text-color-default); text-decoration: none; }
+      .nav-item-active { background-color: var(--bg-lighter) !important; border-left: 4px solid var(--accent-green-primary); }
+      .nav-item-active .nav-text, .nav-item-active i { color: var(--accent-green-primary) !important; }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body class="flex bg-gray-900">
+
+    <div id="sidebar" class="sidebar">
+        <div class="logo-container">
+            <a href="#" class="logo-link">
+                <span class="logo-text-span ml-2">JyStock</span>
+            </a>
+            <button id="toggleSidebar" title="Recolher/Expandir Menu">
+                <i class="fas fa-angle-left"></i>
+            </button>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto">
+            <ul class="py-4">
+                <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'dashboard' %}nav-item-active{% endif %}">
+                    <a href="{% url 'dashboard' %}" class="flex items-center w-full h-full px-4 py-3">
+                        <i class="fas fa-tachometer-alt mr-4 w-5"></i>
+                        <span class="nav-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'add_produto' %}nav-item-active{% endif %}">
+                    <a href="{% url 'add_produto' %}" class="flex items-center w-full h-full px-4 py-3">
+                        <i class="fas fa-boxes-stacked mr-4 w-5"></i>
+                        <span class="nav-text">Mercadorias</span>
+                    </a>
+                </li>
+                 <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'cadastrar_vendedor' %}nav-item-active{% endif %}">
+                    <a href="{% url 'cadastrar_vendedor' %}" class="flex items-center w-full h-full px-4 py-3">
+                        <i class="fas fa-user-plus mr-4 w-5"></i>
+                        <span class="nav-text">Vendedores</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="flex items-center p-2 cursor-pointer">
+            <div class="w-10 h-10 rounded-full border-2 border-[var(--accent-green-primary)] flex items-center justify-center bg-[var(--bg-lighter)] flex-shrink-0">
+                <i class="fas fa-user text-xl text-[var(--accent-green-primary)]"></i>
+            </div>
+            
+            <div class="ml-3 overflow-hidden">
+                <div class="font-semibold text-[var(--text-color-default)] whitespace-nowrap">                    
+                    {{ user.get_full_name|default:user.first_name|default:user.username }}
+                </div>
+                <div class="text-xs text-[var(--text-color-muted)] whitespace-nowrap">                    
+                    {{ user.groups.first.name|default:'Membro' }}
+                </div>
+            </div>
+        </div>
+        <a href="{% url 'logout' %}" class="mt-4 w-full flex items-center p-3 hover:bg-red-700/20 rounded-lg text-red-400">
+            <i class="fas fa-sign-out-alt mr-3"></i>
+            <span>Sair</span>
+        </a>
+    </div>
+
+    <div id="mainContent" class="main-content">
+        <header class="header-main mb-6">
+            <h1 id="pageTitle" class="text-2xl font-bold">
+                {% block page_title %}Dashboard{% endblock %}
+            </h1>
+        </header>
+
+        <div class="flex-grow">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+          const sidebar = document.getElementById('sidebar');
+          const toggleBtn = document.getElementById('toggleSidebar');
+          const mainContent = document.getElementById('mainContent');
+
+          if (toggleBtn) {
+              toggleBtn.addEventListener('click', () => {
+                  sidebar.classList.toggle('collapsed');
+                  mainContent.classList.toggle('sidebar-collapsed');
+              });
+          }
+      });
+    </script>
+</body>
+</html>
