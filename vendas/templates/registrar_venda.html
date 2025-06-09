@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %} 
+
+{% block title %}Registrar Nova Venda{% endblock %}
+
+{% block page_title %}
+    Registrar Nova Venda
+{% endblock %}
+
+{% block content %}
+    
+    
+    {% if messages %}
+    <div class="mb-6 space-y-3">
+        {% for message in messages %}
+           
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="content-section p-8">
+        
+        <div class="mb-8 p-4 border border-[var(--border-color)] rounded-lg">
+            <form action="{% url 'registrar_venda' %}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Buscar por Nome</label>
+                    <input class="input-field" type="text" name="nome_produto" placeholder="Digite parte do nome..." value="{{ request.GET.nome_produto }}">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Filtrar por Categoria</label>
+                    <select class="select-field" name="categoria">
+                        <option value="">Todas as Categorias</option>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}" {% if request.GET.categoria|add:0 == categoria.id %}selected{% endif %}>
+                                {{ categoria.titulo }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-filter mr-2"></i>Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <form action="{% url 'registrar_venda' %}" method="POST">
+            {% csrf_token %}
+
+            <div class="mb-8">
+                <label class="block text-lg font-medium text-[var(--text-color-muted)] mb-2">1. Selecione o Cliente</label>
+                <select name="cliente" class="select-field" required>
+                    <option value="">-- Escolha um cliente --</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nome_razao_social }} ({{ cliente.cpf_cnpj }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-lg font-medium text-[var(--text-color-muted)] mb-2">2. Selecione os Produtos e Quantidades</label>
+                <div class="overflow-x-auto border border-[var(--border-color)] rounded-lg">
+                    <table class="min-w-full table-auto">
+                        <thead class="table-header">
+                            </thead>
+                        <tbody class="divide-y divide-[var(--border-color)]">
+                            {% for produto in produtos %}
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="table-cell text-center py-8 text-[var(--text-color-muted)]">
+                                        Nenhum produto encontrado com os filtros aplicados.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="btn btn-primary text-lg">
+                    <i class="fas fa-check-circle mr-2"></i> Finalizar Venda
+                </button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

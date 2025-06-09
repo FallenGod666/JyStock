@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Clientes{% endblock %}
+
+{% block page_title %}Gerenciar Clientes{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+        {% endif %}
+
+    <div class="content-section p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Cadastrar Novo Cliente</h2>
+        
+        <form action="{% url 'gerenciar_clientes' %}" method="POST" id="form-cliente" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">CNPJ</label>
+                    <input type="text" name="cpf_cnpj" id="cnpj-input" class="input-field" required placeholder="Digite o CNPJ">
+                </div>
+                <div>
+                    <button type="button" id="buscar-btn" class="btn btn-primary w-full">
+                        <i class="fas fa-search mr-2"></i> Buscar Dados
+                    </button>
+                </div>
+            </div>
+            
+            <input type="hidden" name="tipo_pessoa" value="PJ">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Razão Social</label>
+                    <input type="text" name="nome_razao_social" id="razao-social-input" class="input-field" required>
+                </div>
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Nome Fantasia</label>
+                    <input type="text" name="nome_fantasia" id="nome-fantasia-input" class="input-field">
+                </div>
+
+                <div class="lg:col-span-3">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Logradouro</label>
+                    <input type="text" name="logradouro" id="logradouro-input" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Número</label>
+                    <input type="text" name="numero" id="numero-input" class="input-field">
+                </div>
+
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Bairro</label>
+                    <input type="text" name="bairro" id="bairro-input" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">CEP</label>
+                    <input type="text" name="cep" id="cep-input" class="input-field">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">UF</label>
+                    <input type="text" name="uf" id="uf-input" class="input-field">
+                </div>
+
+                <div class="lg:col-span-4">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Cidade</label>
+                    <input type="text" name="cidade" id="cidade-input" class="input-field">
+                </div>
+                
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">Telefone</label>
+                    <input type="text" name="telefone" id="telefone-input" class="input-field">
+                </div>
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-[var(--text-color-muted)] mb-1">E-mail</label>
+                    <input type="text" name="email" id="email-input" class="input-field">
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-end">
+                <button type="submit" class="btn btn-primary">Salvar Cliente</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="content-section mt-8 p-8">
+        <h2 class="text-2xl ...">Clientes Cadastrados</h2>
+        </div>
+
+    <script>
+    document.getElementById('buscar-btn').addEventListener('click', function() {
+        const cnpjInput = document.getElementById('cnpj-input');
+        const cnpj = cnpjInput.value;
+        const url = `/clientes/buscar-cnpj/${cnpj}/`;
+
+        if (!cnpj) {
+            alert('Por favor, digite um CNPJ.');
+            return;
+        }
+
+         
+        this.textContent = 'Buscando...';
+        this.disabled = true;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('CNPJ não encontrado ou inválido.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                
+                document.getElementById('razao-social-input').value = data.razao_social || '';
+                document.getElementById('nome-fantasia-input').value = data.nome_fantasia || '';
+                document.getElementById('logradouro-input').value = data.logradouro || '';
+                document.getElementById('inscricao_estadual-input').value = data.inscricao_estadual || '';
+                document.getElementById('email-input').value = data.email || '';
+                document.getElementById('cep-input').value = data.cep || '';
+                document.getElementById('telefone-input').value = data.telefone || '';
+                document.getElementById('numero-input').value = data.numero || '';
+                document.getElementById('cidade-input').value = data.cidade || '';
+                document.getElementById('bairro-input').value = data.bairro || '';
+                document.getElementById('uf-input').value = data.uf || '';
+
+                
+                alert('Dados preenchidos com sucesso!');
+            })
+            .catch(error => {
+                alert(error.message);
+            })
+            .finally(() => {
+                 
+                this.textContent = 'Buscar Dados';
+                this.disabled = false;
+            });
+    });
+    </script>
+{% endblock %}

@@ -75,6 +75,18 @@
                         <span class="nav-text">Mercadorias</span>
                     </a>
                 </li>
+                <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'gerenciar_clientes' %}nav-item-active{% endif %}">
+                    <a href="{% url 'gerenciar_clientes' %}" class="flex items-center w-full h-full px-4 py-3">
+                        <i class="fas fa-users mr-4 w-5"></i>
+                        <span class="nav-text">Clientes</span>
+                    </a>
+                </li>
+                <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'registrar_venda' %}nav-item-active{% endif %}">
+                    <a href="{% url 'registrar_venda' %}" class="flex items-center w-full h-full px-4 py-3">
+                        <i class="fas fa-dollar-sign mr-4 w-5"></i>
+                        <span class="nav-text">Registrar Venda</span>
+                    </a>
+                </li>
                  <li class="menu-item mx-2 my-1 rounded-lg {% if request.resolver_match.url_name == 'cadastrar_vendedor' %}nav-item-active{% endif %}">
                     <a href="{% url 'cadastrar_vendedor' %}" class="flex items-center w-full h-full px-4 py-3">
                         <i class="fas fa-user-plus mr-4 w-5"></i>
