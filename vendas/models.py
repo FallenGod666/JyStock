@@ -1,11 +1,14 @@
 from django.db import models
 from django.conf import settings 
 from estoque.models import Produto
+from cupons.models import Cupom
 
 class Venda(models.Model):    
     cliente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     data = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    cupom = models.ForeignKey(Cupom, on_delete=models.SET_NULL, null=True, blank=True)
+    desconto_aplicado = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     
     def __str__(self):
         return f"Venda #{self.id} - {self.data.strftime('%d/%m/%Y')}"

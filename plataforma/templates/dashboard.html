@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}Dashboard{% endblock %}
 
-{% block page_title %}
-    Dashboard
-{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
         <div class="content-section p-6">
             <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Produtos Únicos</h3>
             <p class="text-4xl font-bold text-[var(--accent-green-primary)] mt-2">
@@ -27,20 +26,20 @@
 
         <div class="content-section p-6">
             <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Valor em Estoque</h3>
-            <p class="text-3xl font-bold text-[var(--accent-green-primary)] mt-2">                
-                R$ {{ valor_total_estoque|floatformat:2 }}
+            <p class="text-3xl font-bold text-[var(--accent-green-primary)] mt-2">
+                R$ {{ valor_total_estoque|floatformat:2|default:"0,00" }}
             </p>
         </div>
 
         <div class="content-section p-6">
-            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Baixo Estoque</h3>            
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Baixo Estoque</h3>
             <p class="text-4xl font-bold text-[var(--warning-color)] mt-2">
                 {{ produtos_baixo_estoque|default:"0" }}
             </p>
         </div>
 
         <div class="content-section p-6">
-            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Esgotados</h3>            
+            <h3 class="text-lg font-semibold text-[var(--text-color-muted)]">Esgotados</h3>
             <p class="text-4xl font-bold text-[var(--danger-color)] mt-2">
                 {{ produtos_esgotados|default:"0" }}
             </p>
@@ -69,11 +68,74 @@
 
     </div>
 
-    <div class="content-section mt-8 p-6">
-        <h2 class="text-xl font-bold mb-4 text-[var(--accent-green-primary)]">Gráfico de Vendas Mensais</h2>
-        <div class="h-64 bg-[var(--bg-medium)] flex items-center justify-center rounded-lg">
-            <p class="text-[var(--text-color-muted)]">-- Gráfico em breve --</p>
+    <div class="content-section p-6">
+        
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-[var(--accent-green-primary)]">Movimentação de Vendas</h2>
+            <form method="GET" action="{% url 'dashboard' %}" class="flex items-center gap-2">
+                <select name="periodo" class="select-field w-48">
+                    <option value="dia" {% if periodo_filtro == 'dia' %}selected{% endif %}>Últimos 7 dias</option>
+                    <option value="mes" {% if periodo_filtro == 'mes' %}selected{% endif %}>Últimos 30 dias</option>
+                    <option value="ano" {% if periodo_filtro == 'ano' %}selected{% endif %}>Este Ano</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+            </form>
         </div>
-    </div>
+
+        <div class="h-80 w-full bg-[var(--bg-medium)] p-4 rounded-lg">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>    
+    
+    {{ chart_labels|json_script:"chart-labels" }}
+    {{ chart_data|json_script:"chart-data" }}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {        
+        if (!document.getElementById('chart-labels')) {
+            return;
+        }
+
+        const labels = JSON.parse(document.getElementById('chart-labels').textContent);
+        const data = JSON.parse(document.getElementById('chart-data').textContent);
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valor da Venda (R$)',
+                    data: data,
+                    backgroundColor: 'rgba(99, 212, 113, 0.2)',
+                    borderColor: 'rgba(99, 212, 113, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(99, 212, 113, 1)',
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: 'var(--text-green-dark)' },
+                        grid: { color: 'rgba(58, 92, 59, 0.5)' }
+                    },
+                    x: {
+                        ticks: { color: 'var(--text-green-dark)' },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: 'var(--text-green-medium)' }
+                    }
+                }
+            }
+        });
+    });
+    </script>
 
 {% endblock %}

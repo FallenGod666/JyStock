@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'plataforma',
     'vendas',
     'clientes',
+    'cupons',    
     
 ]
 

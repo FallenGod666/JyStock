@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gerenciar Cupons{% endblock %}
+{% block page_title %}Gerenciar Cupons de Desconto{% endblock %}
+
+{% block content %}
+    
+    {% if messages %}{% for message in messages %} ... {% endfor %}{% endif %}
+
+    
+    <div class="content-section p-8">
+        <h2 class="text-2xl font-bold mb-6 text-[var(--accent-green-primary)]">Criar Novo Cupom</h2>
+        <form action="{% url 'gerenciar_cupons' %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm ...">Código</label>
+                    <input type="text" name="codigo" class="input-field uppercase" required>
+                </div>
+                <div>
+                    <label class="block text-sm ...">Tipo de Desconto</label>
+                    <select name="tipo_desconto" class="select-field">
+                        <option value="PERCENTUAL">Porcentagem (%)</option>
+                        <option value="FIXO">Valor Fixo (R$)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm ...">Valor</label>
+                    <input type="number" step="0.01" name="valor_desconto" class="input-field" required>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-8">
+                <button type="submit" class="btn btn-primary">Criar Cupom</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="content-section mt-8 p-8">
+        <h2 class="text-2xl ...">Cupons Cadastrados</h2>        
+    </div>
+{% endblock %}
